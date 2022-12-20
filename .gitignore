@@ -1,0 +1,155 @@
+# pandoc generated pdf
+#*.pdf
+.DS_STORE
+new_sk_model.csv
+# zip files
+#*.zip
+*.pyc
+jkeras/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+new sk model2.csv
+new sk model5.csv
+dnn_best_result.csv
+DNM/stage1/dnn_keras_chuhan.py
+.idea/
+results/testresultsnewtable.csv
+results/testresultsnewtable5year.csv
+results/testresultsnewtable10year.csv
+results/year_5.csv
+results/year_10.csv
+results/year_15.csv
+5_year_stage3-4_180.csv
+5_year_stage3-4_180_summary.csv
+results/newDataset
+h3_merged.csv
+h3_merged_top1000.csv
+5_year_decay_M3D8.csv
+5_year_L2_M3D8.csv
+Shap_deeplearning.ipynb
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# DNM-RF mergedresult
+DNM-RF/stage1/mergedresult
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+# Big data file
+new sk model.csv
+xgb 15year gridsearch.csv
+xgb 10year gridsearch.csv
+xgb 5year gridsearch.csv
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+uploads/
+
+RetrieveData.ipynb
