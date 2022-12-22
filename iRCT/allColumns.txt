@@ -31,6 +31,7 @@ Relation value for MRIs_60_surgery: 0.041278295605858856
 
 Note: all columns with more than binary values, all values other than 0 were set to 1
 Value might be off and/or not accurate
+covariateCol == propensity_score
 
 
 If more accurate results wanted, pass in single treatment column at a time

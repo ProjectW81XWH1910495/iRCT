@@ -16,7 +16,7 @@ class iRCT:
     def __init__(self, dataframe, treatmentCol, outcomeCol, excludedColumns):
         self.df = dataframe
         self.treatmentCol = treatmentCol
-        self.covariateCol = 'propensity_score'
+        self.covariateCol = 'propensity_score_logit'
         self.indexCol = self.df.index
         self.outcomeCol = outcomeCol
         self.excludedColumns = excludedColumns
