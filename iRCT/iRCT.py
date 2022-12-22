@@ -13,12 +13,13 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn import metrics
 
 class iRCT:
-    def __init__(self, dataframe, treatmentCol, outcomeCol):
+    def __init__(self, dataframe, treatmentCol, outcomeCol, excludedColumns):
         self.df = dataframe
         self.treatmentCol = treatmentCol
-        self.covariateCol = 'propensity_score_logit'
+        self.covariateCol = 'propensity_score'
         self.indexCol = self.df.index
         self.outcomeCol = outcomeCol
+        self.excludedColumns = excludedColumns
         self.relationVal = self.calculateRelationVal()
 
     def calculateRelationVal(self):
@@ -30,6 +31,7 @@ class iRCT:
         # Creates matches column for matching estimators
         emptyVal = [0] * self.df.index
         self.df.insert(len(self.df.columns), 'matches', emptyVal)
+        self.df.drop(columns=self.excludedColumns, inplace=True)
 
         self.df = self.generatePropensityScores()
 
@@ -78,7 +80,7 @@ class iRCT:
                 total = total + finalOutcome
                 nonNanVals = nonNanVals + 1
 
-        return 1-(total/nonNanVals)   
+        return total/nonNanVals  
 
 
     def generatePropensityScores(self):
