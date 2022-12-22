@@ -40,6 +40,10 @@ class iRCT:
             base = self.df.iloc[i]
             dfOfMatches = self.df.iloc[(
                 self.df[self.covariateCol]-base[self.covariateCol]).abs().argsort()[:]]
+
+            #Very rough pseudo-approach to changing treatment column to binary
+            #Essentially each entry will just look for entries where the treatment is different from itself, but the closest matches
+            #Since the treatment column is not directly translated to binary there could be some confounding issues
             dfOfMatches = dfOfMatches[dfOfMatches[self.treatmentCol]
                                       != base[self.treatmentCol]]
             temp = abs(dfOfMatches.iloc[0][self.covariateCol]-base[self.covariateCol])
