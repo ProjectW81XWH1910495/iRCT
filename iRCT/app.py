@@ -15,12 +15,6 @@ newDF.index = range(1, len(df)+1, 1)
 treatmentCol = 'menopause_status'
 excludedColumns = []
 
-
-#Replace this line with necessary operation to change treatment column to binary value
-df.loc[df[treatmentCol] != 0, treatmentCol] = 1
-
-
-
 # Create an iRCT object
 myiRCT = iRCT.iRCT(newDF, treatmentCol, outcomeCol, excludedColumns)
 

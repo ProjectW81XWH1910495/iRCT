@@ -1,0 +1,73 @@
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+import statsmodels.formula.api  as smf
+import math
+
+
+df = pd.read_csv('ArceneauxGerberGreen_PA_2006_IA_MI_merge040504.csv')
+df.drop(df[df['bad_county'] == 1].index, inplace = True)
+df=df[df['vote00'].notna()]
+
+df = df[['vote02', 'contact', 'age',  'persons', 'newreg', 'competiv', 'vote00', 'vote98', 'county', 'st_sen', 'st_hse', 'female', 'state']]
+df=df[df['contact'].notna()]
+df['id']=np.arange(df.shape[0])+1
+rest = ['age',  'persons', 'newreg', 'competiv', 'vote00', 'vote98', 'county', 'st_sen', 'st_hse', 'female', 'state']
+
+# exact matching on the covariates
+df_control=df[df['contact']==0]
+df_control.rename(columns={'vote02':'vote020'}, inplace=True)
+df_control['_n0']= df_control.groupby(rest)['id'].transform('count')
+
+df_treatment=df[df['contact']==1]
+df_treatment['_n1']= df_treatment.groupby(rest)['id'].transform('count')
+df_treatment['tid'] = df_treatment['id']
+df_treatment = df_treatment.drop('id', 1)
+df_treatment.rename(columns={'vote02':'vote021'}, inplace=True)
+
+df_combine = df_treatment.merge(df_control, how='inner', on=rest) # only keep the matched observations
+
+# calculate the comparison group weight
+df_combine['numc']= df_combine.groupby('tid')['id'].transform('count')
+df_combine['_encm']= df_combine.groupby('id')['id'].transform('count')
+df_combine['_eweight']=1/df_combine['numc']
+df_combine['_ratio']=df_combine['_n1']/df_combine['_n0']
+
+df_combine_c = df_combine[['id','_eweight']]
+df_combine_c['_eweight'] = df_combine_c.groupby('id')['_eweight'].transform('mean')
+
+df_combine_t = df_combine[['tid','_eweight']]
+df_combine_t['_eweight'] = 1
+df_combine_t['id'] = df_combine_t['tid']
+df_combine_t = df_combine_t.drop('tid', 1)
+df_combine_t.drop_duplicates(keep="first", inplace=True)
+
+df_weight = pd.concat([df_combine_t,df_combine_c])
+df_combine_weight = df.merge(df_weight, how='inner', on='id')
+
+# calculate ATE
+nttot = df_combine_t['id'].count()
+print("number of treated units:", nttot)
+df_combine_weight['_wyi']=(df_combine_weight['contact'] - (1-df_combine_weight['contact'] )*df_combine_weight['_eweight'])*df_combine_weight['vote02']
+d = df_combine_weight['_wyi'].sum()
+att=d/nttot
+print("average treated effect for the treated:", att)
+
+# calculate standard error
+df_combine['Jm']=df_combine.groupby('tid')['tid'].transform('count')
+df_combine['vdif']=(df_combine['vote021']-df_combine['vote020']-att)**2/df_combine['Jm']
+s2 = sum(df_combine['vdif'])/(2*nttot)
+df_combine_weight['var_ti']=((df_combine_weight['contact'] - (1-df_combine_weight['contact'] )*df_combine_weight['_eweight'])**2)*s2
+var_t=sum(df_combine_weight['var_ti'])/(nttot**2)
+
+print("standard error of the exact matching estimate is:", math.sqrt(var_t))
+
+# ols estimate
+import statsmodels.formula.api as smf
+ols = smf.ols('vote02 ~ contact + age + persons+ newreg + competiv +vote00 +vote98 + C(county) + C(st_sen) + C(st_hse)+ female +state', data=df)
+res = ols.fit()
+print(res.summary())
+
+
+
+This code was adopted from the Stata codes used by Arceneaux, Kevin , Alan S. Gerber, and Donald P. Green (2010)

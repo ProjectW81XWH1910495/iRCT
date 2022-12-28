@@ -1,4 +1,4 @@
-Relation value for race    ethnicity: 0.16511318242343542
+Relation value for race ethnicity: 0.16511318242343542
 Relation value for smoking: -0.023968042609853527
 Relation value for alcohol_useage: -0.007989347536617843
 Relation value for family_history: -0.013315579227696404
