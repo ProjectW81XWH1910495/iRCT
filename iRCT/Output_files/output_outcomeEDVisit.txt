@@ -1,0 +1,2 @@
+Relation value for COPD: -0.0025062154829457403
+Outcome column was: ED_Visit

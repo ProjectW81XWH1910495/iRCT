@@ -1,1 +1,0 @@
-Relation value for menopause_status: 0.011984021304926764

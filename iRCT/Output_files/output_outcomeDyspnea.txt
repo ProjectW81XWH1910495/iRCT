@@ -1,0 +1,3 @@
+Relation value for ED_Visit: 0.11081961503383671
+Relation value for COPD: 0.051536310185333466
+Outcome column was: Dyspnea
