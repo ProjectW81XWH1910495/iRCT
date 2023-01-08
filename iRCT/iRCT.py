@@ -37,6 +37,7 @@ class iRCT:
 
         # Finds the closest match/matches in terms of covariate (i.e. propensity_score_logit) values that has the opposite treatment value
         for i in range(len(self.df)):
+            print(i)
             base = self.df.iloc[i]
             dfOfMatches = self.df.iloc[(
                 self.df[self.covariateCol]-base[self.covariateCol]).abs().argsort()[:]]

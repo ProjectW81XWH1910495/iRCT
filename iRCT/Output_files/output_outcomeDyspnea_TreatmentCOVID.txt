@@ -1,0 +1,2 @@
+Relation value for COVID: 0.07430022366699932
+Outcome column was: Dyspnea

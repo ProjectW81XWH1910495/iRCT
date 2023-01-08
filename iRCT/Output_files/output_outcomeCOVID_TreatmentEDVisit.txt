@@ -1,0 +1,2 @@
+Relation value for ED_Visit: 0.0048169494095434235
+Outcome column was: COVID
