@@ -45,3 +45,18 @@ calculateRelationVal is called whenever an iRCT object is initialized and the va
 When the outcome column was COVID and treatment was Dyspnea the result was:
 
 `Relation value for Dyspnea: 0.7165481689737879`
+
+## How to use
+
+This section is to give a simple explanation on how to use the app.py in order to implement iRCT for your own dataset.
+
+1. Determine and set the output file. This will be used to print the relation value between the outcome and treatment variables.
+2. Import your dataset via pandas and ensure all values are numeric. In the sample app.py, most of the values are "negative" or "positive", these are then adjusted to be 0 and 1 in order for the propensity scoring to work properly.
+3. Set the treatment and outcome column names.
+4. Create a list of any columns that need to be excluded when calculating the propensity score i.e. creating the matches.
+5. Create the iRCT object using the above values.
+6. Save the output of the relation value.
+
+The current app.py has examples of all these 6 steps and can be used as a simple example in order to get started. 
+
+Inside the datasets directory there is a file named TrueDags.docx, this represents the DAG for the COVID dataset and can be used to help interpret the results of the values found in the Output_files directory.
