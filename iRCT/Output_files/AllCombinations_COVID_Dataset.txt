@@ -1,0 +1,24 @@
+Relation value for Dyspnea: 0.07854645354645355
+Outcome column was: ED_Visit
+Relation value for COPD: 0.01118379213227946
+Outcome column was: ED_Visit
+Relation value for COVID: 0.02874577489324366
+Outcome column was: ED_Visit
+Relation value for ED_Visit: 0.3968895800933126
+Outcome column was: Dyspnea
+Relation value for COPD: 0.07417098210229854
+Outcome column was: Dyspnea
+Relation value for COVID: 0.12469651283903462
+Outcome column was: Dyspnea
+Relation value for ED_Visit: 0.16111975116640748
+Outcome column was: COPD
+Relation value for Dyspnea: 0.04008491508491509
+Outcome column was: COPD
+Relation value for COVID: 0.006454631519615624
+Outcome column was: COPD
+Relation value for ED_Visit: 0.3097978227060654
+Outcome column was: COVID
+Relation value for Dyspnea: 0.8198051948051948
+Outcome column was: COVID
+Relation value for COPD: -0.004636443475364169
+Outcome column was: COVID

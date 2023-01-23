@@ -4,6 +4,7 @@ import math
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import seaborn as sns
+import time
 
 from sklearn.linear_model import LogisticRegression as lr
 
@@ -13,79 +14,55 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn import metrics
 
 class iRCT:
-    def __init__(self, dataframe, treatmentCol, outcomeCol, excludedColumns):
+    def __init__(self, dataframe, treatmentCol, outcomeCol):
         self.df = dataframe
         self.treatmentCol = treatmentCol
-        self.covariateCol = 'propensity_score_logit'
+        self.covariateCol = 'propensityScoreLogit'
         self.indexCol = self.df.index
         self.outcomeCol = outcomeCol
-        self.excludedColumns = excludedColumns
-        self.relationVal = self.calculateRelationVal()
+        self.relationVal, self.timeToComplete = self.calculateRelationVal()
 
     def calculateRelationVal(self):
-        """
-        :param self: the instance of the iRCT class
-        Returns the value calculated using the matching estimators method
-        """
+
+        '''
+        This function is based on this notebook: https://github.com/konosp/propensity-score-matching/blob/main/propensity_score_matching_v2.ipynb
+        '''
+
+        start = time.time()
 
         # Creates matches column for matching estimators
         emptyVal = [0] * self.df.index
         self.df.insert(len(self.df.columns), 'matches', emptyVal)
-        self.df.drop(columns=self.excludedColumns, inplace=True)
 
-        self.df = self.generatePropensityScores()
+        self.df, X = self.generatePropensityScores()
 
-        # Finds the closest match/matches in terms of covariate (i.e. propensity_score_logit) values that has the opposite treatment value
-        for i in range(len(self.df)):
-            print(i)
-            base = self.df.iloc[i]
-            dfOfMatches = self.df.iloc[(
-                self.df[self.covariateCol]-base[self.covariateCol]).abs().argsort()[:]]
+        knn = NearestNeighbors(n_neighbors=5, p=2)
+        knn.fit(X[['propensityScoreLogit']].to_numpy())
 
-            #Very rough pseudo-approach to changing treatment column to binary
-            #Essentially each entry will just look for entries where the treatment is different from itself, but the closest matches
-            #Since the treatment column is not directly translated to binary there could be some confounding issues
-            dfOfMatches = dfOfMatches[dfOfMatches[self.treatmentCol]
-                                      != base[self.treatmentCol]]
-            temp = abs(dfOfMatches.iloc[0][self.covariateCol]-base[self.covariateCol])
-            
+        distances, indexes = knn.kneighbors(X[['propensityScoreLogit']].to_numpy(), n_neighbors=5)
 
-            listOfMatches = []
+        def matching(row, indexes, X):
+            current_index = int(row['index'])-1
+            prop_score_logit = row['propensityScoreLogit']
+            for idx in indexes[current_index,:]:
+                if (current_index != idx) and (row.treatment == 1) and (X.loc[idx].treatment == 0):
+                    return int(idx)
 
-            searchVal = base[self.covariateCol]
-            covariateVal = self.df[self.covariateCol]
-            queryResult = dfOfMatches.query(
-                '@covariateVal-@searchVal == @temp | @searchVal-@covariateVal == @temp').index
-            for x in queryResult:
-                listOfMatches.append(int(x))
+        X['match'] = X.reset_index().apply(matching, axis = 1, args = (indexes, X))
+        treated_with_match = ~X.match.isna()
+        treated_matched_data = X[treated_with_match][X.columns]
+        
+        untreated_matched_data = pd.DataFrame(data = treated_matched_data.match)
+        untreated_matched_data = untreated_matched_data.set_index('match')
 
-            finalMatches = str(listOfMatches).replace('[', '')
-            finalMatches = finalMatches.replace(']', '')
+        all_matched_data = pd.concat([treated_matched_data, untreated_matched_data])
+        
+        overview = all_matched_data[['outcome','treatment']].groupby(by = ['treatment']).aggregate([np.mean, np.var, np.std, 'count'])
+        
+        treated_outcome = overview['outcome']['mean'][1]
+        treated_counterfactual_outcome = overview['outcome']['mean'][0]
 
-            self.df.at[i, 'matches'] = str(finalMatches)
-
-        # Finds the difference between the matches' average outcome and the current index's outcome, then finds the average of adding all those differences together
-        total = 0
-        nonNanVals = 0
-        for i in range(len(self.df)):
-            treat = self.df.iloc[i][self.treatmentCol]
-            outcomeValue = self.df.iloc[i]['outcome']
-            if type(self.df.iloc[i]['matches']) == str:
-                indexMatches = self.df.iloc[i]['matches'].split(",")
-            indexMatches = [int(j) for j in indexMatches]
-
-            outcomeMatch = self.df.loc[(self.df.index.isin(
-                indexMatches))]['outcome'].mean()
-
-            if treat == 0:
-                finalOutcome = outcomeMatch - outcomeValue
-            else:
-                finalOutcome = outcomeValue - outcomeMatch
-            if not math.isnan(finalOutcome):
-                total = total + finalOutcome
-                nonNanVals = nonNanVals + 1
-
-        return total/nonNanVals  
+        return treated_outcome - treated_counterfactual_outcome, time.time()-start  
 
 
     def generatePropensityScores(self):
@@ -117,9 +94,17 @@ class iRCT:
         dfWithoutOutcome.loc[:, 'propensity_score'] = predictions[:,1]
         dfWithoutOutcome.loc[:, 'propensity_score_logit'] = predictions_logit
         dfWithoutOutcome.loc[:, 'outcome'] = y[self.outcomeCol]
-        return dfWithoutOutcome
+
+        X.loc[:, 'propensityScore'] = predictions[:,1]
+        X.loc[:, 'propensityScoreLogit'] = predictions_logit
+        X.loc[:, 'outcome'] = y[self.outcomeCol]
+        X.loc[:, 'treatment'] = dfWithoutOutcome[self.treatmentCol]
+        return dfWithoutOutcome, X
 
 
+
+
+    #LEGACY METHOD
     def FirstAttempt_calculateRelationVal(self):
         """
         :param self: the instance of the iRCT class
@@ -177,6 +162,10 @@ class iRCT:
 
         return total/len(self.df)
 
+
+
+
+    #LEGACY METHOD
     def SecondAttempt_CalculateRelationVal(self):
          # Creates matches column for matching estimators
         emptyVal = [0] * self.df.index
@@ -232,7 +221,7 @@ class iRCT:
         return 1-(total/nonNanVals)   
 
 
-    def generatePropensityScores(self):
+    def SecondAttempt_generatePropensityScores(self):
         '''
         :param self: the instance of the iRCT class
         Returns the new dataset with the propensity_score and propensity_score_logit columns

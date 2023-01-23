@@ -1,0 +1,21 @@
+The user entered values for the parameters:alpha: 4
+target: Dyspnea
+top: 20
+max_single_predictors: 20
+max_interaction_predictors: 20
+max_size_interaction: 3
+threshold: 0.05
+maximum_number_of_parents: 7
+
+Current dataset path:C:/Users/17172/Desktop/MBIL/datasets/COVID3_4Nodes3.txt
+number_of_predictors: 3
+number_of_records: 50000
+
+Null Score:([('[]', -3857.0545542201144)],)
+Now printing the score of each of the single predictor models:
+[('ED_Visit', -3541.2841106375877), ('COPD', -3688.9113241824634), ('COVID', -3030.9983237259585)]
+
+Now printing interactions and their scores learned by IGain:
+[("['COPD', 'COVID']", -2754.5714910351294)]
+
+Direct cause Identified: ['ED_Visit', "['COPD', 'COVID']"]

@@ -44,7 +44,63 @@ calculateRelationVal is called whenever an iRCT object is initialized and the va
 
 When the outcome column was COVID and treatment was Dyspnea the result was:
 
-`Relation value for Dyspnea: 0.7165481689737879`
+`Relation value for Dyspnea: 0.8198051948051948`
+`Outcome column was: COVID`
+
+
+</br>
+
+### iRCT.generatePropensityScores
+
+Parameters: The iRCT object
+
+Return value: An updated dataframe containing the propensity_score and propensity_score_logit columns, a second dataframe for matching use
+
+This function is used to combine all the covariates into a single propensity_score column in order to allow for the matching algorithm to be effective.
+
+#### Example:
+
+This function is called within the calculateRelationVal function
+
+`self.df, X = self.generatePropensityScores()`
+
+
+</br>
+
+### iRCT.SecondAttempt_calculateRelationVal
+
+THIS IS A LEGACY FUNCTION
+
+Parameters: The iRCT object
+
+Return value: A single float indicating the relation between the treatment and the outcome
+
+This function was the second attempt at the iRCT method and introduced using propensity scoring in order to allow for more than one covariate and thus turn all covariates into a single value in order to perform the matching method on them. This method was replaced with the current version due to the methodology for iterating over the pandas dataframe was extremely ineffective and slow.
+
+#### Example:
+
+calculateRelationVal is called whenever an iRCT object is initialized and the value is stored in the relationVal variable.
+
+`self.relationVal = self.SecondAttempt_calculateRelationVal()`
+
+
+</br>
+
+### iRCT.FirstAttempt_calculateRelationVal
+
+THIS IS A LEGACY FUNCTION
+
+Parameters: The iRCT object
+
+Return value: A single float indicating the relation between the treatment and the outcome
+
+This function was the most rudimentary implementation of the iRCT method using a single covariate column and less than 10 rows in order to get a baseline and test the methodology. This method was replaced due to its extremely slow nature and only being able to deal with a single covariate column.
+
+#### Example:
+
+calculateRelationVal is called whenever an iRCT object is initialized and the value is stored in the relationVal variable.
+
+`self.relationVal = self.FirstAttempt_calculateRelationVal()`
 
 ## How to use
 

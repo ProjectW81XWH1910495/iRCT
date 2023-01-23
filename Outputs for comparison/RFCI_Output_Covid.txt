@@ -1,0 +1,55 @@
+================================================================================
+RFCI (Mon, January 23, 2023 11:20:43 AM)
+================================================================================
+
+Runtime Parameters
+--------------------------------------------------------------------------------
+number of threads: 7
+
+Dataset
+--------------------------------------------------------------------------------
+file: COVID3_4Nodes3.txt
+header: yes
+delimiter: comma
+quote char: none
+missing marker: none
+comment marker: none
+
+Algorithm Run
+--------------------------------------------------------------------------------
+algorithm: RFCI
+test of independence: Fisher Z Test
+
+Algorithm Parameters
+--------------------------------------------------------------------------------
+addOriginalDataset: no
+alpha: 0.01
+completeRuleSetUsed: no
+depth: -1
+maxPathLength: -1
+numberResampling: 0
+percentResampleSize: 90
+resamplingEnsemble: 0
+resamplingWithReplacement: no
+verbose: no
+
+
+Mon, January 23, 2023 11:20:43 AM: Start data validation on file COVID3_4Nodes3.txt.
+Mon, January 23, 2023 11:20:43 AM: End data validation on file COVID3_4Nodes3.txt.
+There are 50000 cases and 4 variables.
+
+Mon, January 23, 2023 11:20:43 AM: Start reading in file COVID3_4Nodes3.txt.
+Mon, January 23, 2023 11:20:43 AM: Finished reading in file COVID3_4Nodes3.txt.
+Mon, January 23, 2023 11:20:43 AM: File COVID3_4Nodes3.txt contains 50000 cases, 4 variables.
+
+Start search: Mon, January 23, 2023 11:20:43 AM
+End search: Mon, January 23, 2023 11:20:43 AM
+
+================================================================================
+Graph Nodes:
+ED_Visit;Dyspnea;COPD;COVID
+
+Graph Edges:
+1. Dyspnea --> ED_Visit dd nl
+2. COPD o-> Dyspnea
+3. COVID o-> Dyspnea
