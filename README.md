@@ -106,10 +106,14 @@ This section is to give a simple explanation on how to use the app.py in order t
 ![FileImage](https://user-images.githubusercontent.com/79263753/214995864-f4235c67-8e21-4831-9dba-a3c2de57d7c0.png)
 
 2. Import your dataset via pandas and ensure all values are numeric. In the sample app.py, most of the values are "negative" or "positive", these are then adjusted to be 0 and 1 in order for the propensity scoring to work properly.
+![DatasetManipulation](https://user-images.githubusercontent.com/79263753/214996035-9a4a4c26-6fb6-49cd-8634-8d5049d06c95.png)
+
 3. Set the treatment and outcome column names.
-4. Create a list of any columns that need to be excluded when calculating the propensity score i.e. creating the matches.
-5. Create the iRCT object using the above values.
-6. Save the output of the relation value.
+4. Create the iRCT object using the above values.
+![ColumnsAndIRCTObject](https://user-images.githubusercontent.com/79263753/214996158-8ecbbee1-4a38-4286-9ca6-fabd6d67b981.png)
+
+5. Save the output of the relation value.
+![WriteOutput](https://user-images.githubusercontent.com/79263753/214996263-bef3285d-7a3c-4260-8a08-ea5f2c2ee106.png)
 
 The current app.py has examples of all these 6 steps and can be used as a simple example in order to get started. 
 
