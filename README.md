@@ -113,6 +113,7 @@ This section is to give a simple explanation on how to use the app.py in order t
 ![ColumnsAndIRCTObject](https://user-images.githubusercontent.com/79263753/214996158-8ecbbee1-4a38-4286-9ca6-fabd6d67b981.png)
 
 5. Save the output of the relation value.
+
 ![WriteOutput](https://user-images.githubusercontent.com/79263753/214996263-bef3285d-7a3c-4260-8a08-ea5f2c2ee106.png)
 
 The current app.py has examples of all these 6 steps and can be used as a simple example in order to get started. 
