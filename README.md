@@ -103,7 +103,7 @@ calculateRelationVal is called whenever an iRCT object is initialized and the va
 This section is to give a simple explanation on how to use the app.py in order to implement iRCT for your own dataset.
 
 1. Determine and set the output file. This will be used to print the relation value between the outcome and treatment variables.
-![Screenshot of setting output file](/ImagesForReadme/FileImage.png)
+![Screenshot of setting output file](/iRCT/iRCT/ImagesForReadme/FileImage.png)
 
 2. Import your dataset via pandas and ensure all values are numeric. In the sample app.py, most of the values are "negative" or "positive", these are then adjusted to be 0 and 1 in order for the propensity scoring to work properly.
 3. Set the treatment and outcome column names.
