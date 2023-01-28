@@ -1,5 +1,5 @@
 # iRCT
-**i**RCT (intelligent **R**andomized **C**ontrol **T**rial) is an algorithm that uses a combination of propensity scoring, matching estimators, and average treatment effect in order to determine whether a factor has a correlative result in the outcome.
+**i**RCT (intelligent **R**andomized **C**ontrol **T**rial) is a collection of algorithms that can be used to learn causes of an outcome variable using real-world evidence. Currently it includes propensity scoring, matching estimators, and average treatment effect etc methods for estimating causal strength.
 
 Dependencies:
 - Pandas
