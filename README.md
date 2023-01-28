@@ -1,5 +1,5 @@
 # iRCT
-iRCT (intelligent Randomized Control Trial) is an algorithm that uses a combination of propensity scoring, matching estimators, and average treatment effect in order to determine whether a factor has a correlative result in the outcome.
+**i**RCT (intelligent **R**andomized **C**ontrol **T**rial) is an algorithm that uses a combination of propensity scoring, matching estimators, and average treatment effect in order to determine whether a factor has a correlative result in the outcome.
 
 Dependencies:
 - Pandas
