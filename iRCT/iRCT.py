@@ -104,7 +104,7 @@ class iRCT:
 
 
 
-    #LEGACY METHOD
+    #Old method
     def FirstAttempt_calculateRelationVal(self):
         """
         :param self: the instance of the iRCT class
@@ -165,7 +165,7 @@ class iRCT:
 
 
 
-    #LEGACY METHOD
+    #Old Methods
     def SecondAttempt_CalculateRelationVal(self):
          # Creates matches column for matching estimators
         emptyVal = [0] * self.df.index
