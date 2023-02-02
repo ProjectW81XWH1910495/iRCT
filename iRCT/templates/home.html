@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>iRCT Home Page</title>
+{% endblock %}
+
+{% block body %}
+    <div id="input">
+        <form action="/" method="POST">
+            <label for="treatmentCol">Treatment Column:</label>
+            <input type="text" id="treatmentCol" name="Treatment Column">
+            <label for="outcomeCol">Outcome Column:</label>
+            <input type="text" id="outcomeCol" name="Outcome Column">
+        </form>
+    </div>
+{% endblock %}
