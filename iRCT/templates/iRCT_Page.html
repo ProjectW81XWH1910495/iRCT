@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>iRCT Function Page</title>
+{% endblock %}
+
+{% block body %}
+    <div>
+        <p>File successfully uploaded!</p>
+        <p>File Name: {{name}}</p>
+
+        <form method="POST">
+
+            <p>The treatment column is the column that is being determined if it is caused by the outcome column.</p>
+            <label for="treat_column">Choose a treatment column:</label>
+            <select id="columns" name="treat_column">
+                {% for column in columns %}
+                <option value='{{column}}'>{{ column }}</option>
+                {% endfor %}
+            </select>
+            
+            <br/>
+            
+            <p>The outcome column is the column that is being determing if it is a direct cause of the treatment column.</p>
+            <label for="out_column">Choose an outcome column:</label>
+            <select id="columns" name="out_column">
+                {% for column in columns %}
+                <option value='{{column}}'>{{ column }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="fileName" hidden>
+                <option value='{{ name }}'></option>
+            </select>
+
+            <select name="delimiter" hidden>
+                <option value='{{ delim }}'></option>
+            </select>
+            
+            <br/>
+
+            <input type="submit" value="Submit">
+        </form>
+        
+    </div>
+{% endblock %}

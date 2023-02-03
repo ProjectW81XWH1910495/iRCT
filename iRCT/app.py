@@ -3,9 +3,9 @@ import iRCT
 
 
 # Read in dataframe with seperators being commas
-f = open('/Users/xij6/Documents/Research/git/XiaJiang-2Github/iRCT/iRCT/Output_files/jiang_tests_output.txt', 'a')
+f = open('C:/Users/17172/Desktop/iRCT/iRCT/Output_files/testOutput', 'a')
 
-df = pd.read_csv("/Users/xij6/Documents/Research/git/XiaJiang-2Github/iRCT/datasets/COVID3_4Nodes3.dat")
+df = pd.read_csv("C:/Users/17172/Desktop/iRCT/datasets/COVID3_4Nodes3.txt")
 
 # Create an index column and and replace all categorical values with numerical values
 df.index = range(1, len(df)+1, 1)
