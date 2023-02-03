@@ -182,7 +182,7 @@ class iRCT:
 
         #Define X or the dataframe for all covariates and fit to a logistical regression model
         X = dfWithoutOutcome.loc[:, dfWithoutOutcome.columns != self.treatmentCol]
-        pipe = Pipeline([('scaler', StandardScaler()), ('logistic_classifier', lr())])
+        pipe = Pipeline([('scaler', StandardScaler()), ('logistic_classifier', LogisticRegression())])
         pipe.fit(X, T)
 
         #Generate the propensity scores
