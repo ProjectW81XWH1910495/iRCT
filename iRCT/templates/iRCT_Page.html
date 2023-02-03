@@ -11,27 +11,31 @@
 
         <form method="POST">
 
-            <p>The treatment column is the column that is being determined if it is caused by the outcome column.</p>
-            <label for="treat_column">Choose a treatment column:</label>
+            <p>The treatment column is the column that is being determined if it is influencing the outcome column.</p>
+            <label for="treat_column">Choose the treatment column:</label>
             <select id="columns" name="treat_column">
                 {% for column in columns %}
                 <option value='{{column}}'>{{ column }}</option>
                 {% endfor %}
             </select>
-            
+
             <br/>
-            
-            <p>The outcome column is the column that is being determing if it is a direct cause of the treatment column.</p>
-            <label for="out_column">Choose an outcome column:</label>
+
+            <p>The outcome column is the column that is being determined if it is being influenced by the treatment column.</p>
+            <label for="out_column">Choose the outcome column:</label>
             <select id="columns" name="out_column">
                 {% for column in columns %}
                 <option value='{{column}}'>{{ column }}</option>
                 {% endfor %}
             </select>
 
+            <br/>
+
             <select name="fileName" hidden>
                 <option value='{{ name }}'></option>
             </select>
+
+            <br/>
 
             <select name="delimiter" hidden>
                 <option value='{{ delim }}'></option>

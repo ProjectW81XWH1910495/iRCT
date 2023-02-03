@@ -5,8 +5,9 @@ import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+import statsmodels.formula.api as smf
 
-from sklearn.linear_model import LogisticRegression as lr
+from sklearn.linear_model import LogisticRegression
 
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -20,87 +21,33 @@ class iRCT:
         self.covariateCol = 'propensityScoreLogit'
         self.indexCol = self.df.index
         self.outcomeCol = outcomeCol
-        self.relationVal, self.timeToComplete = self.calculateRelationVal()
+        self.relationVal = self.calculateRelationVal()
 
     def calculateRelationVal(self):
 
         '''
-        This function is based on this notebook: https://github.com/konosp/propensity-score-matching/blob/main/propensity_score_matching_v2.ipynb
+        New propensity score based matching and average treatment effect implemented from this code: https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html
         '''
 
-        start = time.time()
+        T = self.treatmentCol
+        Y = self.outcomeCol
+        X = self.df.columns.drop([T, Y])
 
-        # Creates matches column for matching estimators
-        emptyVal = [0] * self.df.index
-        self.df.insert(len(self.df.columns), 'matches', emptyVal)
+        ps_model = LogisticRegression(C=1e6).fit(self.df[X], self.df[T])
+        data_ps = self.df.assign(propensity_score=ps_model.predict_proba(self.df[X])[:, 1])
 
-        self.df, X = self.generatePropensityScores()
+        weight_t = 1/data_ps.query(self.treatmentCol + "==1")["propensity_score"]
+        weight_nt = 1/(1-data_ps.query(self.treatmentCol + "==0")["propensity_score"])
 
-        knn = NearestNeighbors(n_neighbors=5, p=2)
-        knn.fit(X[['propensityScoreLogit']].to_numpy())
-
-        distances, indexes = knn.kneighbors(X[['propensityScoreLogit']].to_numpy(), n_neighbors=5)
-
-        def matching(row, indexes, X):
-            current_index = int(row['index'])-1
-            prop_score_logit = row['propensityScoreLogit']
-            for idx in indexes[current_index,:]:
-                if (current_index != idx) and (row.treatment == 1) and (X.loc[idx].treatment == 0):
-                    return int(idx)
-
-        X['match'] = X.reset_index().apply(matching, axis = 1, args = (indexes, X))
-        treated_with_match = ~X.match.isna()
-        treated_matched_data = X[treated_with_match][X.columns]
-        
-        untreated_matched_data = pd.DataFrame(data = treated_matched_data.match)
-        untreated_matched_data = untreated_matched_data.set_index('match')
-
-        all_matched_data = pd.concat([treated_matched_data, untreated_matched_data])
-        
-        overview = all_matched_data[['outcome','treatment']].groupby(by = ['treatment']).aggregate([np.mean, np.var, np.std, 'count'])
-        
-        treated_outcome = overview['outcome']['mean'][1]
-        treated_counterfactual_outcome = overview['outcome']['mean'][0]
-
-        return treated_outcome - treated_counterfactual_outcome, time.time()-start  
+        weight = ((data_ps[self.treatmentCol]-data_ps["propensity_score"]) /
+          (data_ps["propensity_score"]*(1-data_ps["propensity_score"])))
 
 
-    def generatePropensityScores(self):
-        '''
-        :param self: the instance of the iRCT class
-        Returns the new dataset with the propensity_score and propensity_score_logit columns
+        y1 = sum(data_ps.query(self.treatmentCol + "==1")[self.outcomeCol]*weight_t) / len(self.df)
+        y0 = sum(data_ps.query(self.treatmentCol + "==0")[self.outcomeCol]*weight_nt) / len(self.df)
 
-        This function is based on this notebook: https://github.com/konosp/propensity-score-matching/blob/main/propensity_score_matching_v2.ipynb
-        '''
-
-        #Define the treatment and outcome columns
-        y = self.df[[self.outcomeCol]]
-        dfWithoutOutcome = self.df.drop(columns=[self.outcomeCol])
-        T = dfWithoutOutcome[self.treatmentCol]
-
-        #Define X or the dataframe for all covariates and fit to a logistical regression model
-        X = dfWithoutOutcome.loc[:, dfWithoutOutcome.columns != self.treatmentCol]
-        pipe = Pipeline([('scaler', StandardScaler()), ('logistic_classifier', lr())])
-        pipe.fit(X, T)
-
-        #Generate the propensity scores
-        predictions = pipe.predict_proba(X)
-        predictions_binary = pipe.predict(X)
-
-        #Generate the propensity score logit
-        predictions_logit = np.array([logit(xi) for xi in predictions[:,1]])
-
-        #Add both propensity_score, propensity_score_logit, and outcome columns to dataframe 
-        dfWithoutOutcome.loc[:, 'propensity_score'] = predictions[:,1]
-        dfWithoutOutcome.loc[:, 'propensity_score_logit'] = predictions_logit
-        dfWithoutOutcome.loc[:, 'outcome'] = y[self.outcomeCol]
-
-        X.loc[:, 'propensityScore'] = predictions[:,1]
-        X.loc[:, 'propensityScoreLogit'] = predictions_logit
-        X.loc[:, 'outcome'] = y[self.outcomeCol]
-        X.loc[:, 'treatment'] = dfWithoutOutcome[self.treatmentCol]
-        return dfWithoutOutcome, X
-
+        ate = np.mean(weight * data_ps[self.outcomeCol])
+        return ate
 
 
 
