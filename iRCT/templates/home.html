@@ -5,25 +5,32 @@
 {% endblock %}
 
 {% block body %}
-    <div id="input">
-        <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" />
-            <label for="delim">Please specify the delimiter here:</label>
-            <input type="text" name="delim" />
-            <br/>
-
-            <input type="submit" value="Upload">
-        </form>
-    </div> 
-
-    <br/>
-
     <div id="body">
-        <p>Hello and welcome to the Intelligent Randomized Controlled Trial (iRCT) method's webpage!</p>
+        <h1>Welcome to iRCT's webpage!</h1>
         <p>Please note the following before uploading a file:</p>
         <li>All data in the file must be numerical.</li>
         <li>The currently accepted file formats are: txt, csv, xlsx, and dat</li>
         <li>For the delimiter put what is sepearting the values in the file i.e. ',' or '\t'(for tab). Check the pandas documentation on delimiters for any further clarification.</li>
+    </div>
+
+    <br/>
+
+    <div id="input">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" />
+            <label for="delim">Please specify the delimiter for your dataset here:</label>
+            <select id="delimiters" name="delim">
+                <option value=":">colon</option>
+                <option value=",">comma</option>
+                <option value="|">pipe</option>
+                <option value=";">semicolon</option>
+                <option value=" ">space</option>
+                <option value="\t">tab</option>
+            </select>
+            <br/>
+
+            <input type="submit" value="Upload">
+        </form>
     </div>
 
     <br/>

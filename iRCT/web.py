@@ -72,6 +72,5 @@ if __name__ == "__main__":
     #TODO
     # Add function to make sure delimiter is correct for that file
     # Make all pages more visually appealing
-    # Add Text to pages describing how different features work and what input types should look like
     # Make sure file uploaded is deleted no matter what
     # Add feature to choose between all three existing functions, and if a function doesn't work with that datset delete the file and return to the homepage saying there was an error loading that function.
