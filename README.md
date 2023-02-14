@@ -110,7 +110,7 @@ This section is to give a simple explanation on how to use the app.py in order t
 
 3. Set the treatment and outcome column names.
 4. Create the iRCT object using the above values.
-![ColumnsAndIRCTObject](https://user-images.githubusercontent.com/79263753/214996158-8ecbbee1-4a38-4286-9ca6-fabd6d67b981.png)
+![iRCT image 3](https://user-images.githubusercontent.com/79263753/218617325-25957a53-f872-49ce-a232-ddbfb971530f.png)
 
 5. Save the output of the relation value.
 
