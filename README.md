@@ -109,8 +109,9 @@ This section is to give a simple explanation on how to use the app.py in order t
 ![DatasetManipulation](https://user-images.githubusercontent.com/79263753/214996035-9a4a4c26-6fb6-49cd-8634-8d5049d06c95.png)
 
 3. Set the treatment and outcome column names.
-4. Create the iRCT object using the above values.
+4. Create the iRCT object using the above values. The final integer is representative of the function to be called. 1 is the most recent up-to-date function, 2 is the SecondAttempt function found in iRCT, and 3 is the FirstAttempt function found in iRCT.
 ![iRCT image 3](https://user-images.githubusercontent.com/79263753/218617325-25957a53-f872-49ce-a232-ddbfb971530f.png)
+
 
 5. Save the output of the relation value.
 
