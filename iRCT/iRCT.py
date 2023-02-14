@@ -15,39 +15,46 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn import metrics
 
 class iRCT:
-    def __init__(self, dataframe, treatmentCol, outcomeCol):
+    def __init__(self, dataframe, treatmentCol, outcomeCol, functionNum):
         self.df = dataframe
         self.treatmentCol = treatmentCol
         self.covariateCol = 'propensityScoreLogit'
         self.indexCol = self.df.index
         self.outcomeCol = outcomeCol
         self.relationVal = self.calculateRelationVal()
+        self.functionNum = functionNum
 
     def calculateRelationVal(self):
 
         '''
         New propensity score based matching and average treatment effect implemented from this code: https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html
         '''
+        if self.functionNum == 1:
+            T = self.treatmentCol
+            Y = self.outcomeCol
+            X = self.df.columns.drop([T, Y])
 
-        T = self.treatmentCol
-        Y = self.outcomeCol
-        X = self.df.columns.drop([T, Y])
+            ps_model = LogisticRegression(C=1e6).fit(self.df[X], self.df[T])
+            data_ps = self.df.assign(propensity_score=ps_model.predict_proba(self.df[X])[:, 1])
 
-        ps_model = LogisticRegression(C=1e6).fit(self.df[X], self.df[T])
-        data_ps = self.df.assign(propensity_score=ps_model.predict_proba(self.df[X])[:, 1])
+            weight_t = 1/data_ps.query(self.treatmentCol + "==1")["propensity_score"]
+            weight_nt = 1/(1-data_ps.query(self.treatmentCol + "==0")["propensity_score"])
 
-        weight_t = 1/data_ps.query(self.treatmentCol + "==1")["propensity_score"]
-        weight_nt = 1/(1-data_ps.query(self.treatmentCol + "==0")["propensity_score"])
-
-        weight = ((data_ps[self.treatmentCol]-data_ps["propensity_score"]) /
-          (data_ps["propensity_score"]*(1-data_ps["propensity_score"])))
+            weight = ((data_ps[self.treatmentCol]-data_ps["propensity_score"]) /
+            (data_ps["propensity_score"]*(1-data_ps["propensity_score"])))
 
 
-        y1 = sum(data_ps.query(self.treatmentCol + "==1")[self.outcomeCol]*weight_t) / len(self.df)
-        y0 = sum(data_ps.query(self.treatmentCol + "==0")[self.outcomeCol]*weight_nt) / len(self.df)
+            y1 = sum(data_ps.query(self.treatmentCol + "==1")[self.outcomeCol]*weight_t) / len(self.df)
+            y0 = sum(data_ps.query(self.treatmentCol + "==0")[self.outcomeCol]*weight_nt) / len(self.df)
 
-        ate = np.mean(weight * data_ps[self.outcomeCol])
-        return ate
+            ate = np.mean(weight * data_ps[self.outcomeCol])
+            return ate
+        elif self.functionNum == 2:
+            return self.SecondAttempt_CalculateRelationVal()
+        elif self.functionNum == 3:
+            return self.FirstAttempt_calculateRelationVal()
+        else:
+            return 0
 
 
 

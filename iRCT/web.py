@@ -24,10 +24,11 @@ def home():
             return redirect("/")
         f = request.files['file']
         delim = request.form['delim']
+        functionNum = request.form['functionNum']
         if f and allowed_file(f.filename):
             f.save(f.filename)
             uploaded_file = True
-            return redirect(url_for('iRCT_Page', filename=f.filename, uploaded_file=uploaded_file, delim=delim))
+            return redirect(url_for('iRCT_Page', filename=f.filename, uploaded_file=uploaded_file, delim=delim, functionNum = functionNum))
         else:
             return redirect("/")
 
@@ -43,7 +44,7 @@ def iRCT_Page():
             df = pd.read_csv(filename, sep=delim)
             listOfColumns = df.columns
 
-            return render_template("iRCT_Page.html", name=filename, columns=listOfColumns, delim=delim)
+            return render_template("iRCT_Page.html", name=filename, columns=listOfColumns, delim=delim, functionNum=request.args.get('functionNum', None))
         else:
             return redirect('/')
     
@@ -52,6 +53,7 @@ def iRCT_Page():
         outcomeCol = request.form['out_column']
         fileName = request.form['fileName']
         delimiter = request.form['delimiter']
+        functionNum = request.form['functionNum']
 
         df = pd.read_csv(fileName, sep=delimiter)
         df.index = range(1, len(df)+1, 1)
@@ -61,7 +63,7 @@ def iRCT_Page():
             os.remove(fileName)
             return redirect(url_for('home', error=errMsg))
         else:
-            myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol)
+            myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, functionNum)
             os.remove(fileName)
             return render_template("output.html", result=str(myiRCT.relationVal), outcome=outcomeCol, treatment=treatmentCol)
 

@@ -19,7 +19,8 @@ treatmentCol = 'Dyspnea'
 outcomeCol = 'COVID'
 
 # Create an iRCT object
-myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol)
+# The final integer is the function to be used 1 = the most recent up-to-date function, 2 is the SecondAttempt function found in iRCT, and 3 is the FirstAttempt function found in iRCT.
+myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, 1)
 
 
 #Write the relation value to the file from above

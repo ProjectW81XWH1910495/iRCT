@@ -10,7 +10,7 @@
         <p>Please note the following before uploading a file:</p>
         <li>All data in the file must be numerical.</li>
         <li>The currently accepted file formats are: txt, csv, xlsx, and dat</li>
-        <li>For the delimiter put what is sepearting the values in the file i.e. ',' or '\t'(for tab). Check the pandas documentation on delimiters for any further clarification.</li>
+        <li>NOTE: using certain functions on your dataset might cause errors or not work.</li>
     </div>
 
     <br/>
@@ -26,6 +26,14 @@
                 <option value=";">semicolon</option>
                 <option value=" ">space</option>
                 <option value="\t">tab</option>
+            </select>
+            <br/>
+
+            <label for="functionNum">Please sepcify the function you would like to use:</label>
+            <select id="functions" name="functionNum">
+                <option value="1">Most up-to-date Function (Multiple covariates, fastest)</option>
+                <option value="2">Multiple covariates iterative propensity score method</option>
+                <option value="3">Single covariate iterative method</option>
             </select>
             <br/>
 
