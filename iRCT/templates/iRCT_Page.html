@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <div>
+    <div id="submit_irct">
         <p>File successfully uploaded!</p>
         <p>File Name: {{name}}</p>
 
@@ -24,6 +24,15 @@
             <p>The outcome column is the column that is being determined if it is being influenced by the treatment column.</p>
             <label for="out_column">Choose the outcome column:</label>
             <select id="columns" name="out_column">
+                {% for column in columns %}
+                <option value='{{column}}'>{{ column }}</option>
+                {% endfor %}
+            </select>
+
+            <p>If you chose the single covariate option, please choose the column that will be your single covariate. If not set this value to N/A.</p>
+            <label for="covariate_column">Choose the single covariate column:</label>
+            <select id="columns" name="covariate_column">
+                <option value='N/A'>N/A</option>
                 {% for column in columns %}
                 <option value='{{column}}'>{{ column }}</option>
                 {% endfor %}

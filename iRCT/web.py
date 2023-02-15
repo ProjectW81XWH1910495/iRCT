@@ -51,6 +51,7 @@ def iRCT_Page():
     if request.method == 'POST':
         treatmentCol = request.form['treat_column']
         outcomeCol = request.form['out_column']
+        covariateCol = request.form['covariate_column']
         fileName = request.form['fileName']
         delimiter = request.form['delimiter']
         functionNum = request.form['functionNum']
@@ -58,12 +59,12 @@ def iRCT_Page():
         df = pd.read_csv(fileName, sep=delimiter)
         df.index = range(1, len(df)+1, 1)
 
-        if treatmentCol == outcomeCol:
-            errMsg = 'Outcome and Treatment columns cannot be the same.'
+        if treatmentCol == outcomeCol or treatmentCol == covariateCol or outcomeCol == covariateCol:
+            errMsg = 'Two of the columns cannot be the same.'
             os.remove(fileName)
             return redirect(url_for('home', error=errMsg))
         else:
-            myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, functionNum)
+            myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, functionNum, covariateCol)
             os.remove(fileName)
             return render_template("output.html", result=str(myiRCT.relationVal), outcome=outcomeCol, treatment=treatmentCol)
 

@@ -18,9 +18,12 @@ df = df.replace(to_replace='Positive', value=1)
 treatmentCol = 'Dyspnea'
 outcomeCol = 'COVID'
 
+# Only will be used if functionNum is 3
+singleCovariate = None
+
 # Create an iRCT object
 # The final integer is the function to be used 1 = the most recent up-to-date function, 2 is the SecondAttempt function found in iRCT, and 3 is the FirstAttempt function found in iRCT.
-myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, 1)
+myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, 1, None)
 
 
 #Write the relation value to the file from above

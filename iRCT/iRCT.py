@@ -15,21 +15,25 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn import metrics
 
 class iRCT:
-    def __init__(self, dataframe, treatmentCol, outcomeCol, functionNum):
+    def __init__(self, dataframe, treatmentCol, outcomeCol, functionNum, singleCovariate):
         self.df = dataframe
         self.treatmentCol = treatmentCol
-        self.covariateCol = 'propensityScoreLogit'
+        self.covariateCol = 'propensity_score_logit'
         self.indexCol = self.df.index
         self.outcomeCol = outcomeCol
-        self.relationVal = self.calculateRelationVal()
         self.functionNum = functionNum
+        self.singleCovariate = singleCovariate
+        self.relationVal = self.calculateRelationVal()
 
     def calculateRelationVal(self):
 
         '''
         New propensity score based matching and average treatment effect implemented from this code: https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html
         '''
-        if self.functionNum == 1:
+
+        finalVal = 0.0
+        if int(self.functionNum) == 1:
+            print("Running function 1")
             T = self.treatmentCol
             Y = self.outcomeCol
             X = self.df.columns.drop([T, Y])
@@ -48,13 +52,16 @@ class iRCT:
             y0 = sum(data_ps.query(self.treatmentCol + "==0")[self.outcomeCol]*weight_nt) / len(self.df)
 
             ate = np.mean(weight * data_ps[self.outcomeCol])
-            return ate
-        elif self.functionNum == 2:
-            return self.SecondAttempt_CalculateRelationVal()
-        elif self.functionNum == 3:
-            return self.FirstAttempt_calculateRelationVal()
-        else:
-            return 0
+            finalVal = ate
+            return finalVal
+        elif int(self.functionNum) == 2:
+            print("Running function 2")
+            finalVal = self.SecondAttempt_CalculateRelationVal()
+            return finalVal
+        elif int(self.functionNum) == 3:
+            print("Running function ")
+            finalVal = self.FirstAttempt_calculateRelationVal()
+            return finalVal
 
 
 
@@ -77,25 +84,26 @@ class iRCT:
         for i in range(len(self.df)):
             base = self.df.iloc[i]
             dfOfMatches = self.df.iloc[(
-                self.df[self.covariateCol]-base[self.covariateCol]).abs().argsort()[:]]
+                self.df[self.singleCovariate]-base[self.singleCovariate]).abs().argsort()[:]]
             dfOfMatches = dfOfMatches[dfOfMatches[self.treatmentCol]
                                       != base[self.treatmentCol]]
             temp = abs(
-                (int(dfOfMatches.iloc[0][self.covariateCol])-int(base[self.covariateCol])))
+                (int(dfOfMatches.iloc[0][self.singleCovariate])-int(base[self.singleCovariate])))
 
             listOfMatches = []
 
-            searchVal = int(base[self.covariateCol])
-            covariateVal = self.df[self.covariateCol]
+            searchVal = int(base[self.singleCovariate])
+            covariateVal = self.df[self.singleCovariate]
             queryResult = dfOfMatches.query(
-                '@covariateVal-@searchVal == @temp | @searchVal-@covariateVal == @temp')['i']
+                '@covariateVal-@searchVal == @temp | @searchVal-@covariateVal == @temp')
+            queryResult = queryResult.index.tolist()
             for x in queryResult:
                 listOfMatches.append(int(x))
 
             finalMatches = str(listOfMatches).replace('[', '')
             finalMatches = finalMatches.replace(']', '')
 
-            self.df.at[i, 'matches'] = finalMatches
+            self.df.at[i+1, 'matches'] = finalMatches
 
         # Finds the difference between the matches' average outcome and the current index's outcome, then finds the average of adding all those differences together
         total = 0
@@ -105,8 +113,7 @@ class iRCT:
             indexMatches = self.df.iloc[i]['matches'].split(",")
             indexMatches = [eval(j) for j in indexMatches]
 
-            outcomeMatch = self.df.loc[(self.df[self.indexCol].isin(
-                indexMatches))][self.outcomeCol].mean()
+            outcomeMatch = self.df.loc[(self.df.index.isin(indexMatches))][self.outcomeCol].mean()
 
             if treat == 0:
                 finalOutcome = outcomeMatch - outcomeValue
@@ -125,7 +132,7 @@ class iRCT:
         emptyVal = [0] * self.df.index
         self.df.insert(len(self.df.columns), 'matches', emptyVal)
 
-        self.df = self.generatePropensityScores()
+        self.df = self.SecondAttempt_generatePropensityScores()
 
         # Finds the closest match/matches in terms of covariate (i.e. propensity_score_logit) values that has the opposite treatment value
         for i in range(len(self.df)):
