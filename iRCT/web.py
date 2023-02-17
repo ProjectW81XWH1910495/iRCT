@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+# from flask_session import Session
 import os
 import pandas as pd
 import iRCT
 
 app = Flask(__name__)
+# app.config['SESSION_TYPE'] = 'filesystem'
+# app.config['SESSION_FILE_THRESHOLD'] = 3
+# Session(app).init_app
 
 ALLOWED_EXTENSIONS = {'txt', 'csv', 'xlsx', 'dat'}
 
@@ -70,10 +74,8 @@ def iRCT_Page():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
 
 
-    #TODO
-    # Add function to make sure delimiter is correct for that file
-    # Make all pages more visually appealing
+    # TODO
     # Make sure file uploaded is deleted no matter what
-    # Add feature to choose between all three existing functions, and if a function doesn't work with that datset delete the file and return to the homepage saying there was an error loading that function.
