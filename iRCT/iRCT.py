@@ -33,7 +33,6 @@ class iRCT:
 
         finalVal = 0.0
         if int(self.functionNum) == 1:
-            print("Running function 1")
             T = self.treatmentCol
             Y = self.outcomeCol
             X = self.df.columns.drop([T, Y])
@@ -55,11 +54,9 @@ class iRCT:
             finalVal = ate
             return finalVal
         elif int(self.functionNum) == 2:
-            print("Running function 2")
             finalVal = self.SecondAttempt_CalculateRelationVal()
             return finalVal
         elif int(self.functionNum) == 3:
-            print("Running function ")
             finalVal = self.FirstAttempt_calculateRelationVal()
             return finalVal
 
