@@ -22,8 +22,8 @@ outcomeCol = 'COVID'
 singleCovariate = None
 
 # Create an iRCT object
-# The final integer is the function to be used 1 = the most recent up-to-date function, 2 is the SecondAttempt function found in iRCT, and 3 is the FirstAttempt function found in iRCT.
-myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, 1, None)
+# The final integer is the function to be used 2 = the most recent up-to-date function, 3 is the SecondAttempt function found in iRCT, and 4 is the FirstAttempt function found in iRCT.
+myiRCT = iRCT.iRCT(df, treatmentCol, outcomeCol, 2, None)
 
 
 #Write the relation value to the file from above

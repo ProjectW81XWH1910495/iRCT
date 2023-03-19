@@ -1,11 +1,8 @@
 import pandas as pd
 import numpy as np
 import math
-import statsmodels.api as sm
 import matplotlib.pyplot as plt
-import seaborn as sns
 import time
-import statsmodels.formula.api as smf
 
 from sklearn.linear_model import LogisticRegression
 
@@ -23,7 +20,7 @@ class iRCT:
         self.outcomeCol = outcomeCol
         self.functionNum = functionNum
         self.singleCovariate = singleCovariate
-        self.relationVal = self.calculateRelationVal()
+        self.relationVal, self.runningTime = self.calculateRelationVal()
 
     def calculateRelationVal(self):
 
@@ -32,7 +29,9 @@ class iRCT:
         '''
 
         finalVal = 0.0
-        if int(self.functionNum) == 1:
+        if int(self.functionNum) == 2:
+            startTime = time.time()
+
             T = self.treatmentCol
             Y = self.outcomeCol
             X = self.df.columns.drop([T, Y])
@@ -52,13 +51,15 @@ class iRCT:
 
             ate = np.mean(weight * data_ps[self.outcomeCol])
             finalVal = ate
-            return finalVal
-        elif int(self.functionNum) == 2:
-            finalVal = self.SecondAttempt_CalculateRelationVal()
-            return finalVal
+            return finalVal, time.time() - startTime
         elif int(self.functionNum) == 3:
+            startTime = time.time()
+            finalVal = self.SecondAttempt_CalculateRelationVal()
+            return finalVal, time.time() - startTime
+        elif int(self.functionNum) == 4:
+            startTime = time.time()
             finalVal = self.FirstAttempt_calculateRelationVal()
-            return finalVal
+            return finalVal, time.time() - startTime
 
 
 
