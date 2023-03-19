@@ -34,7 +34,9 @@ Parameters: The iRCT object
 
 Return value: A single float indicating the relation between the treatment and the outcome
 
-This function uses the afforementioned propensity scores to perform a matching estimator method and then finds the average treatment outcome.
+This function uses logistical regression and weighting of treated and untreated columns in order to determine average treatment effect via matching.
+
+NOTE: This method is much faster than the other methods due to a much more efficient non-iterative matching approach being used.
 
 #### Example:
 
@@ -50,7 +52,7 @@ When the outcome column was COVID and treatment was Dyspnea the result was:
 
 </br>
 
-### iRCT.generatePropensityScores
+### iRCT.SecondAttempt_generatePropensityScores
 
 Parameters: The iRCT object
 
@@ -74,6 +76,8 @@ Parameters: The iRCT object
 Return value: A single float indicating the relation between the treatment and the outcome
 
 This function was the second attempt at the iRCT method and introduced using propensity scoring in order to allow for more than one covariate and thus turn all covariates into a single value in order to perform the matching method on them. This method was replaced with the current version due to the methodology for iterating over the pandas dataframe was extremely ineffective and slow.
+
+NOTE: This method is slower due to the search method for matching based on ilocing the entire dataset and then querying the results.
 
 #### Example:
 
