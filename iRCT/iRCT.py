@@ -3,6 +3,8 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import time
+from causalinference import CausalModel
+from zepid.causal.gformula import TimeFixedGFormula
 
 from sklearn.linear_model import LogisticRegression
 
@@ -10,6 +12,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
 from sklearn import metrics
+
+from mbil import scores
+from mbil import dataset
+from mbil import mbilsearch
+from mbil import mbilscore
+from mbil import output
 
 class iRCT:
     def __init__(self, dataframe, treatmentCol, outcomeCol, functionNum, singleCovariate):
@@ -24,33 +32,10 @@ class iRCT:
 
     def calculateRelationVal(self):
 
-        '''
-        New propensity score based matching and average treatment effect implemented from this code: https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html
-        '''
-
         finalVal = 0.0
         if int(self.functionNum) == 2:
             startTime = time.time()
-
-            T = self.treatmentCol
-            Y = self.outcomeCol
-            X = self.df.columns.drop([T, Y])
-
-            ps_model = LogisticRegression(C=1e6).fit(self.df[X], self.df[T])
-            data_ps = self.df.assign(propensity_score=ps_model.predict_proba(self.df[X])[:, 1])
-
-            weight_t = 1/data_ps.query(self.treatmentCol + "==1")["propensity_score"]
-            weight_nt = 1/(1-data_ps.query(self.treatmentCol + "==0")["propensity_score"])
-
-            weight = ((data_ps[self.treatmentCol]-data_ps["propensity_score"]) /
-            (data_ps["propensity_score"]*(1-data_ps["propensity_score"])))
-
-
-            y1 = sum(data_ps.query(self.treatmentCol + "==1")[self.outcomeCol]*weight_t) / len(self.df)
-            y0 = sum(data_ps.query(self.treatmentCol + "==0")[self.outcomeCol]*weight_nt) / len(self.df)
-
-            ate = np.mean(weight * data_ps[self.outcomeCol])
-            finalVal = ate
+            finalVal = self.iRCT()
             return finalVal, time.time() - startTime
         elif int(self.functionNum) == 3:
             startTime = time.time()
@@ -60,7 +45,39 @@ class iRCT:
             startTime = time.time()
             finalVal = self.FirstAttempt_calculateRelationVal()
             return finalVal, time.time() - startTime
+        elif int(self.functionNum) == 5:
+            startTime = time.time()
+            finalVal = self.IPTW()
+            return finalVal, time.time() - startTime
+        elif int(self.functionNum) == 6:
+            startTime = time.time()
+            finalVal = self.gFormula()
+            return finalVal, time.time() - startTime
+        elif int(self.functionNum) == 7:
+            startTime = time.time()
+            finalVal = self.pythonMBIL()
+            return finalVal, time.time() - startTime
+        
+    
 
+    def iRCT(self):
+        '''
+        New propensity score based matching and average treatment effect implemented from this code: https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html
+        '''
+
+        T = self.treatmentCol
+        Y = self.outcomeCol
+        X = self.df.columns.drop([T, Y])
+
+        ps_model = LogisticRegression(C=1e6).fit(self.df[X], self.df[T])
+        data_ps = self.df.assign(propensity_score=ps_model.predict_proba(self.df[X])[:, 1])
+
+        weight = ((data_ps[self.treatmentCol]-data_ps["propensity_score"]) /
+        (data_ps["propensity_score"]*(1-data_ps["propensity_score"])))
+
+        ate = np.mean(weight * data_ps[self.outcomeCol])
+        return ate
+    
 
 
     #Old method
@@ -123,7 +140,6 @@ class iRCT:
 
 
 
-
     #Old Methods
     def SecondAttempt_CalculateRelationVal(self):
          # Creates matches column for matching estimators
@@ -180,6 +196,7 @@ class iRCT:
         return 1-(total/nonNanVals)   
 
 
+
     def SecondAttempt_generatePropensityScores(self):
         '''
         :param self: the instance of the iRCT class
@@ -209,6 +226,78 @@ class iRCT:
         dfWithoutOutcome.loc[:, 'propensity_score_logit'] = predictions_logit
         dfWithoutOutcome.loc[:, 'outcome'] = y[self.outcomeCol]
         return dfWithoutOutcome
+
+
+    
+    def IPTW(self):
+        '''
+        This method is based of the example from https://medium.com/grabngoinfo/inverse-probability-treatment-weighting-iptw-using-python-package-causal-inference-7d8f454eb8f3
+        '''
+        cols = list(self.df.columns)
+        cols.remove(self.outcomeCol)
+        cols.remove(self.treatmentCol)
+
+        causal = CausalModel(Y = self.df[self.outcomeCol].values, D = self.df[self.treatmentCol].values, X = self.df[cols].values)
+
+        causal.est_propensity_s()
+        causal.est_via_weighting()
+
+        return causal.estimates.get('weighting').get('ate')
+    
+    def gFormula(self):
+
+        '''
+        This code is based on the code here: https://github.com/pzivich/Python-for-Epidemiologists/blob/master/3_Epidemiology_Analysis/c_causal_inference/1_time-fixed-treatments/01_g-formula.ipynb
+        '''
+
+        g = TimeFixedGFormula(self.df, exposure=self.treatmentCol ,outcome=self.outcomeCol)
+
+        base = ''
+
+        listColumns = list(self.df.columns)
+        listColumns.remove(self.outcomeCol)
+        for column in listColumns:
+            base += column + " + "
+
+        base = base[:len(base)-3]
+
+        g.outcome_model(model = base, print_results=False)
+
+        g.fit(treatment='all')
+        r_all = g.marginal_outcome
+
+        g.fit(treatment='none')
+        r_none = g.marginal_outcome
+
+        return r_all - r_none
+    
+
+    def pythonMBIL(self):
+        alpha = 4
+        target = self.outcomeCol
+        top = 20
+        max_single_predictors = 20
+        max_interaction_predictors = 20
+        max_size_interaction = 3
+        threshold = 0.05
+        maximum_number_of_parents=7
+
+        score_test_obj = mbilscore.mbilscore(dataset_df=self.df, target=target, alpha = alpha)
+        search_test_object = mbilsearch.mbilsearch(threshold=threshold,
+                                                max_single_predictors= max_single_predictors,
+                                                max_interaction_predictors=max_interaction_predictors,
+                                                max_size_interaction= max_size_interaction,
+                                                dataset_df = self.df,
+                                                alpha = alpha,
+                                                target = target)
+        
+        direct_cause_obj = mbilsearch.directCause(
+            new_dataset = search_test_object.transformed_dataset,
+            alpha= alpha,
+            target = target,
+            maximum_number_of_parents = maximum_number_of_parents)
+        
+        return direct_cause_obj.direc_cause
 
 def logit(p):
     logit_value = math.log(p / (1-p))
