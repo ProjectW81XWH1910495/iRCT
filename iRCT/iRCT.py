@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import time
 from causalinference import CausalModel
 from zepid.causal.gformula import TimeFixedGFormula
+from psmpy import PsmPy
+from psmpy.functions import cohenD
+from psmpy.plotting import *
 
 from sklearn.linear_model import LogisticRegression
 
@@ -33,27 +36,27 @@ class iRCT:
     def calculateRelationVal(self):
 
         finalVal = 0.0
-        if int(self.functionNum) == 2:
+        if int(self.functionNum) == 1:
             startTime = time.time()
             finalVal = self.iRCT()
             return finalVal, time.time() - startTime
-        elif int(self.functionNum) == 3:
+        elif int(self.functionNum) == 2:
             startTime = time.time()
             finalVal = self.SecondAttempt_CalculateRelationVal()
             return finalVal, time.time() - startTime
-        elif int(self.functionNum) == 4:
+        elif int(self.functionNum) == 3:
             startTime = time.time()
             finalVal = self.FirstAttempt_calculateRelationVal()
             return finalVal, time.time() - startTime
-        elif int(self.functionNum) == 5:
+        elif int(self.functionNum) == 4:
             startTime = time.time()
             finalVal = self.IPTW()
             return finalVal, time.time() - startTime
-        elif int(self.functionNum) == 6:
+        elif int(self.functionNum) == 5:
             startTime = time.time()
             finalVal = self.gFormula()
             return finalVal, time.time() - startTime
-        elif int(self.functionNum) == 7:
+        elif int(self.functionNum) == 6:
             startTime = time.time()
             finalVal = self.pythonMBIL()
             return finalVal, time.time() - startTime
@@ -62,7 +65,7 @@ class iRCT:
 
     def iRCT(self):
         '''
-        New propensity score based matching and average treatment effect implemented from this code: https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html
+        Uses matching in order to determine the average treatment effect via https://almost-matching-exactly.github.io/DAME-FLAME-Python-Package/user-guide/Treatment-Effects
         '''
 
         T = self.treatmentCol
@@ -72,8 +75,7 @@ class iRCT:
         ps_model = LogisticRegression(C=1e6).fit(self.df[X], self.df[T])
         data_ps = self.df.assign(propensity_score=ps_model.predict_proba(self.df[X])[:, 1])
 
-        weight = ((data_ps[self.treatmentCol]-data_ps["propensity_score"]) /
-        (data_ps["propensity_score"]*(1-data_ps["propensity_score"])))
+        weight = ((data_ps[self.treatmentCol]) / (data_ps["propensity_score"]))
 
         ate = np.mean(weight * data_ps[self.outcomeCol])
         return ate
@@ -302,7 +304,3 @@ class iRCT:
 def logit(p):
     logit_value = math.log(p / (1-p))
     return logit_value
-
-
-
-
