@@ -1,0 +1,50 @@
+Relation value for Dyspnea: 0.1209181396656444
+Outcome column was: ED_Visit
+Time to run was: 0.06104779243469238 seconds
+
+Relation value for COPD: 0.009003432102381853
+Outcome column was: ED_Visit
+Time to run was: 0.059609174728393555 seconds
+
+Relation value for COVID: 0.01311297923181472
+Outcome column was: ED_Visit
+Time to run was: 0.06061244010925293 seconds
+
+Relation value for ED_Visit: 0.12716615245267465
+Outcome column was: Dyspnea
+Time to run was: 0.05799603462219238 seconds
+
+Relation value for COPD: 0.06849906950800956
+Outcome column was: Dyspnea
+Time to run was: 0.05751609802246094 seconds
+
+Relation value for COVID: 0.09476106076507539
+Outcome column was: Dyspnea
+Time to run was: 0.053519248962402344 seconds
+
+Relation value for ED_Visit: 0.0354609195472077
+Outcome column was: COPD
+Time to run was: 0.0650181770324707 seconds
+
+Relation value for Dyspnea: 0.5935680690097971
+Outcome column was: COPD
+Time to run was: 0.06771469116210938 seconds
+
+Relation value for COVID: 0.046052948455145286
+Outcome column was: COPD
+Time to run was: 0.0655977725982666 seconds
+
+Relation value for ED_Visit: 0.09999244368453011
+Outcome column was: COVID
+Time to run was: 0.06399250030517578 seconds
+
+Relation value for Dyspnea: 0.8314818374143667
+Outcome column was: COVID
+Time to run was: 0.06658291816711426 seconds
+
+Relation value for COPD: 0.08634735527566538
+Outcome column was: COVID
+Time to run was: 0.06580400466918945 seconds
+
+
+
